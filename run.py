@@ -9,7 +9,7 @@ from flask import Flask, jsonify, request
 from flask.wrappers import Response
 
 from nacos_api import get_service_list, get_instance_list
-from wrap import wrap_services, wrap_health_service
+from wrap import wrap_services, wrap_service, wrap_health_service
 
 app = Flask(__name__)
 
@@ -29,21 +29,30 @@ def api_services():
     return jsonify(result)
 
 
-@app.route('/v1/catalog/service/<string:name>')
-@app.route('/v1/health/service/<string:name>')
-def api_service(name):
+def api_service_handle(dc: str, _wrap):
     """
     wrap Consul `dc` to Nacos `group`
-    :param name:
+    :param dc: consul datacenter
+    :param _wrap: wrap Nacos response to Consul format
     :return:
     """
     group = request.args.get('dc')
-    data = get_instance_list(name, group=group)
-    logging.debug('get_instance_list: %s %s', name, data)
+    data = get_instance_list(dc, group=group)
+    logging.debug('get_instance_list: %s %s', dc, data)
 
-    result = wrap_health_service(data)
+    result = _wrap(data)
 
     return jsonify(result)
+
+
+@app.route('/v1/catalog/service/<string:name>')
+def api_service(name):
+    return api_service_handle(name, wrap_service)
+
+
+@app.route('/v1/health/service/<string:name>')
+def api_health_service(name):
+    return api_service_handle(name, wrap_health_service)
 
 
 @app.after_request
