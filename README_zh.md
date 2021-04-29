@@ -1,25 +1,24 @@
 # Nacos Prometheus API
 
-A [Nacos Open API](https://nacos.io/en-us/docs/open-api.html) wrapping as [Consul API](https://www.consul.io/api-docs/health) format
-for [Prometheus](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#consul_sd_config) Discovery
+[Prometheus](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#consul_sd_config) 基于 [Nacos开放API](https://nacos.io/en-us/docs/open-api.html) 的服务发现的 [Consul API](https://www.consul.io/api-docs/health) 格式代理[接口](#接口样例) 
 
-[中文文档](README_zh.md)
+[English](README.md)
 
-## Get Start
+## 开始
 
-- update Nacos host on [nacos_api.py](nacos_api.py), default is [nacos-headless.default:8848](nacos-headless.default:8848)
+- 更新 [nacos_api.py](nacos_api.py) 服务地址, 或指定启动参数`--nacos-servers`, 默认为 [nacos-headless.default:8848](nacos-headless.default:8848)
 
 ```console
-# make sure pypi requirements
+# 安装Python依赖
 pip install -r requirements.txt
 
-# exe
+# 启动
 ./run.py
 ```
 
-- ### Optional: Deploy on [Kubernetes](https://kubernetes.io/docs/home/)
+- ### 可选: [Kubernetes](https://kubernetes.io/docs/home/) 部署
 
-1. Build [Docker](https://docs.docker.com/engine/reference/commandline/build/) image
+1. 构建 [Docker](https://docs.docker.com/engine/reference/commandline/build/) 镜像
 
 ```console
 #!/bin/sh
@@ -28,15 +27,15 @@ docker build -t ${_image_name} .
 # docker push ${_image_name}
 ```
 
-2. Apply Kubernetes components
-    - example configure files in [k8s/](k8s/), custom and apply them
+2. 创建 [Kubernetes](https://kubernetes.io/docs/home/) 组件
+    - Kubernetes 组件配置参考 [k8s/](k8s/) ， 按需修改
 
 ```console
 kubectl apply -f k8s/*.yml
 ```
 
-3. Add [Prometheus](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#consul_sd_config) Job
-    - example
+3. 添加 [Prometheus](https://prometheus.io/docs/prometheus/latest/configuration/configuration/#consul_sd_config) 服务发现配置
+    - 参考
 
 ```yaml
 - job_name: nacos-test
@@ -46,14 +45,14 @@ kubectl apply -f k8s/*.yml
   consul_sd_configs:
     - server: 'host-to-api-service:80'
       scheme: http
-      # Optional, filter Nacos group
+      # 可选, 指定 Nacos 组
       # datacenter: SOME_NACOS_GROUP
 
-      # Optional, filter tags that splitting service name words
+      # 可选, tags 过滤，服务名分词
       # tags:
       # - TAG_NAME
   relabel_configs:
-    # Optional, basic labels I recommend 
+    # 可选, 常用label定义
     - source_labels: [ '__meta_consul_service' ]
       target_label: service
     - source_labels: [ '__meta_consul_dc' ]
@@ -62,7 +61,7 @@ kubectl apply -f k8s/*.yml
       target_label: env
 ```
 
-### API respond Examples
+### 接口样例
 
 - [/v1/agent/self](/v1/agent/self)
 
