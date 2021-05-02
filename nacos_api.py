@@ -27,13 +27,13 @@ def get_service_list(group=None):
     TODO: page rolling...
     """
     r = requests.get('http://%s/nacos/v1/ns/service/list' % get_nacos_node(),
-                     params={'pageNo': 0, 'pageSize': 1000, 'groupName': group})
+                     params={'pageNo': 1, 'pageSize': 1000, 'groupName': group})
     log.debug('nacos services: %s %s', group, r.text)
     return r.json()
 
 
 def get_instance_list(service, group=None):
     r = requests.get('http://%s/nacos/v1/ns/instance/list' % get_nacos_node(),
-                     params={'pageNo': 0, 'pageSize': 1000, 'groupName': group, 'serviceName': service, 'healthyOnly': True})
+                     params={'pageNo': 1, 'pageSize': 1000, 'groupName': group, 'serviceName': service, 'healthyOnly': True})
     log.debug('nacos instances: %s %s %s', group, service, r.text)
     return r.json()

@@ -8,7 +8,7 @@
 
 - 更新 [nacos_api.py](nacos_api.py) 服务地址, 或指定启动参数`--nacos-servers`, 默认为 [nacos-headless.default:8848](nacos-headless.default:8848)
 
-```console
+```shell
 # 安装Python依赖
 pip install -r requirements.txt
 
@@ -16,11 +16,31 @@ pip install -r requirements.txt
 ./run.py
 ```
 
-- ### 可选: [Kubernetes](https://kubernetes.io/docs/home/) 部署
+- 启动参数
+
+```shell
+# ./run.py -h
+
+使用: run.py [-h] [--log-level LOG_LEVEL] [--log-stdout] [--log-file]
+              [--nacos-servers NACOS_SERVERS]
+
+Nacos Consul API 代理
+
+可选参数:
+  -h, --help            帮助
+  --log-level LOG_LEVEL
+                        日志级别
+  --log-stdout          日志输出至控制台
+  --log-file            日志输出至滚动文件
+  --nacos-servers NACOS_SERVERS
+                        Nacos 服务地址 host:port[,host2:port], 默认为 "nacos-headless.default:8848"
+```
+
+- ### **可选:** [Kubernetes](https://kubernetes.io/docs/home/) 部署
 
 1. 构建 [Docker](https://docs.docker.com/engine/reference/commandline/build/) 镜像
 
-```console
+```shell
 #!/bin/sh
 _image_name='repository-host/nacos-prometheus-api:latest'
 docker build -t ${_image_name} .
@@ -30,7 +50,7 @@ docker build -t ${_image_name} .
 2. 创建 [Kubernetes](https://kubernetes.io/docs/home/) 组件
     - Kubernetes 组件配置参考 [k8s/](k8s/) ， 按需修改
 
-```console
+```shell
 kubectl apply -f k8s/*.yml
 ```
 
@@ -61,7 +81,7 @@ kubectl apply -f k8s/*.yml
       target_label: env
 ```
 
-### 接口样例
+## 接口样例
 
 - [/v1/agent/self](/v1/agent/self)
 

@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+import argparse
 import logging
-import os.path
-import sys
 import time
 
 from flask import Flask, jsonify, request
@@ -62,24 +61,43 @@ def after(response: Response):
     return response
 
 
-def _init_logger(level=logging.DEBUG):
+def _init_logger(level=logging.DEBUG, is_stdout=False, is_file=False):
     root = logging.getLogger()
     root.setLevel(level)
 
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
+    if is_stdout:
+        import sys
+        handler = logging.StreamHandler(sys.stdout)
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
 
-    from logging import handlers
-    logs_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs')
-    os.makedirs(logs_dir, exist_ok=True)
-    handler = handlers.TimedRotatingFileHandler(os.path.join(logs_dir, 'api.log'), when='h', interval=4, backupCount=128)
-    handler.setFormatter(formatter)
-    root.addHandler(handler)
+    if is_file:
+        from logging import handlers
+        import os
+        logs_dir = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'logs')
+        os.makedirs(logs_dir, exist_ok=True)
+        handler = handlers.TimedRotatingFileHandler(os.path.join(logs_dir, 'api.log'), when='h', interval=4, backupCount=128)
+        handler.setFormatter(formatter)
+        root.addHandler(handler)
 
 
 if __name__ == '__main__':
-    # _init_logger(logging.DEBUG)
+    p = argparse.ArgumentParser(description='Nacos Consul API server')
+    p.add_argument('--log-level', default='INFO', help='level for log')
+    p.add_argument('--log-stdout', default=False, action='store_true', help='log to console')
+    p.add_argument('--log-file', default=False, action='store_true', help='log to daily files')
+    p.add_argument('--nacos-servers', action='append', help='the Nacos server host:port[,host2:port], default is "nacos-headless.default:8848"')
+
+    args = p.parse_args()
+
+    _init_logger(level=args.log_level, is_stdout=args.log_stdout, is_file=args.log_file)
+
+    if args.nacos_servers:
+        hosts = tuple(h for i in args.nacos_servers for h in i.split(',') if h)
+        if hosts:
+            import nacos_api
+            nacos_api.NACOS_HOSTS = hosts
+
     app.run('0.0.0.0', port=8080)

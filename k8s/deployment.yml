@@ -45,4 +45,14 @@ spec:
           image: nacos-prometheus-api:latest
           ports:
             - containerPort: 8080
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              path: /v1/agent/self
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 60
+            periodSeconds: 60
+            successThreshold: 1
+            timeoutSeconds: 5
 
