@@ -32,8 +32,8 @@ def get_service_list(group=None):
     return r.json()
 
 
-def get_instance_list(service, group=None):
+def get_instance_list(service, group=None, health_only=False):
     r = requests.get('http://%s/nacos/v1/ns/instance/list' % get_nacos_node(),
-                     params={'pageNo': 1, 'pageSize': 1000, 'groupName': group, 'serviceName': service, 'healthyOnly': True})
+                     params={'pageNo': 1, 'pageSize': 1000, 'groupName': group, 'serviceName': service, 'healthyOnly': health_only})
     log.debug('nacos instances: %s %s %s', group, service, r.text)
     return r.json()
