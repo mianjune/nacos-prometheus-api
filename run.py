@@ -28,7 +28,7 @@ def api_services():
     return jsonify(result)
 
 
-def api_service_handle(dc: str, _wrap):
+def api_service_handle(service_name: str, _wrap):
     """
     wrap Consul `dc` to Nacos `group`
     :param dc: consul datacenter
@@ -36,8 +36,8 @@ def api_service_handle(dc: str, _wrap):
     :return:
     """
     group = request.args.get('dc')
-    data = get_instance_list(dc, group=group)
-    logging.debug('get_instance_list: %s %s', dc, data)
+    data = get_instance_list(service_name, group=group)
+    logging.debug('get_instance_list[%s]: %s', service_name, data)
 
     result = _wrap(data)
 
