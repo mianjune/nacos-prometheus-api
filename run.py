@@ -85,6 +85,7 @@ def _init_logger(level=logging.DEBUG, is_stdout=False, is_file=False):
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description='Nacos Consul API server')
+    p.add_argument('--port', default=8080, help='port of web')
     p.add_argument('--log-level', default='INFO', help='level for log')
     p.add_argument('--log-stdout', default=False, action='store_true', help='log to console')
     p.add_argument('--log-file', default=False, action='store_true', help='log to daily files')
@@ -100,4 +101,4 @@ if __name__ == '__main__':
             import nacos_api
             nacos_api.NACOS_HOSTS = hosts
 
-    app.run('0.0.0.0', port=8080)
+    app.run('0.0.0.0', port=args.port)
